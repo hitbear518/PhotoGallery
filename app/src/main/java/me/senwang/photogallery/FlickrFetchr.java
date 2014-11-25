@@ -29,7 +29,7 @@ public class FlickrFetchr {
 
 	public static final String XML_PHOTO = "photo";
 
-	private byte[] getUrlBytes(String urlSpec) throws IOException {
+	byte[] getUrlBytes(String urlSpec) throws IOException {
 		InputStream in = null;
 		HttpURLConnection connection = null;
 		try {
