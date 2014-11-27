@@ -2,8 +2,10 @@ package me.senwang.photogallery;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,7 +31,15 @@ public class PhotoGalleryFragment extends Fragment {
 		setRetainInstance(true);
 
 		new FetchItemsTask().execute();
-		mThumbnailThread = new ThumbnailDownloader<ImageView>();
+		mThumbnailThread = new ThumbnailDownloader<ImageView>(new Handler());
+		mThumbnailThread.setListener(new ThumbnailDownloader.Listener<ImageView>() {
+			@Override
+			public void onThumbnailDownloaded(ImageView imageView, Bitmap thumbnail) {
+				if (isVisible()) {
+					imageView.setImageBitmap(thumbnail);
+				}
+			}
+		});
 		mThumbnailThread.start();
 		mThumbnailThread.getLooper();
 		Log.i(TAG, "Background thread started");
@@ -44,6 +54,12 @@ public class PhotoGalleryFragment extends Fragment {
 		setupAdapter();
 
 		return v;
+	}
+
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		mThumbnailThread.clearQueue();
 	}
 
 	@Override

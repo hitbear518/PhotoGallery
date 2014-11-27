@@ -16,11 +16,23 @@ public class ThumbnailDownloader<Token> extends HandlerThread {
 	public static final String TAG = "ThumbnailDownloader";
 	private static final int MESSAGE_DOWNLOAD = 0;
 
-	private Handler mHandler;
-	Map<Token, String> requestMap = Collections.synchronizedMap(new HashMap<Token, String>());
+	public interface Listener<T> {
+		void onThumbnailDownloaded(T t, Bitmap thumbnail);
+	}
 
-	public ThumbnailDownloader() {
+	private Handler mHandler;
+	private Map<Token, String> requestMap = Collections.synchronizedMap(new HashMap<Token, String>());
+
+	private Handler mResponseHandler;
+	private Listener<Token> mListener;
+
+	public ThumbnailDownloader(Handler responseHandler) {
 		super(TAG);
+		mResponseHandler = responseHandler;
+	}
+
+	public void setListener(Listener<Token> listener) {
+		mListener = listener;
 	}
 
 	@Override
@@ -58,8 +70,25 @@ public class ThumbnailDownloader<Token> extends HandlerThread {
 			byte[] bitmapBytes = new FlickrFetchr().getUrlBytes(url);
 			final Bitmap bitmap = BitmapFactory.decodeByteArray(bitmapBytes, 0, bitmapBytes.length);
 			Log.i(TAG, "Bitmap created");
+
+			mResponseHandler.post(new Runnable() {
+				@Override
+				public void run() {
+					if (requestMap.get(token) != url) {
+						return;
+					}
+
+					requestMap.remove(token);
+					mListener.onThumbnailDownloaded(token, bitmap);
+				}
+			});
 		} catch (IOException e) {
 			Log.e(TAG, "Error downloading image", e);
 		}
+	}
+
+	public void clearQueue() {
+		mHandler.removeMessages(MESSAGE_DOWNLOAD);
+		requestMap.clear();
 	}
 }
