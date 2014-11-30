@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
 import android.util.Log;
+import android.widget.ImageView;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -68,7 +69,20 @@ public class ThumbnailDownloader<Token> extends HandlerThread {
 
 		try {
 			byte[] bitmapBytes = new FlickrFetchr().getUrlBytes(url);
-			final Bitmap bitmap = BitmapFactory.decodeByteArray(bitmapBytes, 0, bitmapBytes.length);
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+			BitmapFactory.decodeByteArray(bitmapBytes, 0, bitmapBytes.length, options);
+            int imageHeight = options.outHeight;
+            int imageWidth = options.outWidth;
+            String imageType = options.outMimeType;
+            Log.i(TAG, "Image Height: " + imageHeight + ", Image Width: " + imageWidth + ", Image Type: " + imageType);
+            ImageView imageView = (ImageView) token;
+            int reqHeight = imageView.getHeight();
+            int reqWidth = imageView.getWidth();
+            options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+            Log.i(TAG, "View Height: " + reqHeight + ", View Width: " + reqWidth + ", Sample Size: " + options.inSampleSize);
+            options.inJustDecodeBounds = false;
+            final Bitmap bitmap = BitmapFactory.decodeByteArray(bitmapBytes, 0, bitmapBytes.length, options);
 			Log.i(TAG, "Bitmap created");
 
 			mResponseHandler.post(new Runnable() {
@@ -91,4 +105,22 @@ public class ThumbnailDownloader<Token> extends HandlerThread {
 		mHandler.removeMessages(MESSAGE_DOWNLOAD);
 		requestMap.clear();
 	}
+
+    public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            while ((halfHeight / inSampleSize) > reqHeight
+                    && (halfWidth / inSampleSize) > reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+
+        return inSampleSize;
+    }
 }
