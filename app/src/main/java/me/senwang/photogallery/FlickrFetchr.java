@@ -31,6 +31,8 @@ public class FlickrFetchr {
 
 	public static final String XML_PHOTO = "photo";
 
+    public static final String PREF_LAST_RESULT_ID = "lastResultId";
+
 	byte[] getUrlBytes(String urlSpec) throws IOException {
 		InputStream in = null;
 		HttpURLConnection connection = null;
