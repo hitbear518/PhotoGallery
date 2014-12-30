@@ -1,11 +1,4 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/fragment_container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
-
-    <TextView
-        android:textAppearance="?android:attr/dateTextAppearance"
-        android:layout_width="k"
-        android:layout_height="" />
-
-    </FrameLayout>
+    android:layout_height="match_parent" />
