@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="package_name">me.senwang.photogallery</string>
+    <string name="perm_private">me.senwang.photogallery.PRIVATE</string>
+    
+</resources>

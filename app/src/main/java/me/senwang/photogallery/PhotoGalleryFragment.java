@@ -1,7 +1,6 @@
 package me.senwang.photogallery;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.Context;
@@ -25,7 +24,7 @@ import android.widget.SearchView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PhotoGalleryFragment extends Fragment {
+public class PhotoGalleryFragment extends VisibleFragment {
 
 	private static final String TAG = PhotoGalleryFragment.class.getSimpleName();
 

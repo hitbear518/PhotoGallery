@@ -21,6 +21,11 @@ public class PollService extends IntentService {
     private static final String TAG = PollService.class.getSimpleName();
 
     private static final int POLL_INTERVAL = 1000 * 60 * 5;
+	public static final String PREF_IS_ALARM_ON = "isAlarmOn";
+
+	public static final String ACTION_SHOW_NOTIFICATION = "com.me.senwang.photogallery.PRIVATE";
+
+	public static final String PERM_PRIVATE = "me.senwang.photogallery.PRIVATE";
 
     public static void setServiceAlarm(Context context, boolean isOn) {
         Intent i = new Intent(context, PollService.class);
@@ -33,6 +38,11 @@ public class PollService extends IntentService {
             alarmManager.cancel(pi);
             pi.cancel();
         }
+
+		PreferenceManager.getDefaultSharedPreferences(context)
+				.edit()
+				.putBoolean(PREF_IS_ALARM_ON, isOn)
+				.commit();
     }
 
 	public static boolean isServiceAlarmOn(Context context) {
@@ -82,6 +92,8 @@ public class PollService extends IntentService {
 
 			NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 			notificationManager.notify(0, notification);
+
+			sendBroadcast(new Intent(ACTION_SHOW_NOTIFICATION), PERM_PRIVATE);
 		} else {
             Log.i(TAG, "Got an old result: " + resultId);
         }
@@ -90,4 +102,6 @@ public class PollService extends IntentService {
                 .putString(FlickrFetchr.PREF_LAST_RESULT_ID, resultId)
                 .apply();
     }
+
+
 }
