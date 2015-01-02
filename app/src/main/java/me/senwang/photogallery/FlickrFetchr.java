@@ -101,12 +101,10 @@ public class FlickrFetchr {
 			parser.setInput(new StringReader(xmlString));
 
 			parseItems(items, parser);
-		} catch (IOException e) {
-			Log.e(TAG, "Failed to fetch items", e);
-		} catch (XmlPullParserException e) {
+		} catch (IOException | XmlPullParserException e) {
 			Log.e(TAG, "Failed to fetch items", e);
 		}
-		return items;
+        return items;
 	}
 
 	private void parseItems(ArrayList<GalleryItem> items, XmlPullParser parser) throws IOException, XmlPullParserException {
@@ -117,11 +115,13 @@ public class FlickrFetchr {
 				String id = parser.getAttributeValue(null, "id");
 				String caption = parser.getAttributeValue(null, "title");
 				String smallUrl = parser.getAttributeValue(null, EXTRA_SMALL_URL);
+                String owner = parser.getAttributeValue(null, "owner");
 
 				GalleryItem item = new GalleryItem();
 				item.setId(id);
 				item.setCaption(caption);
 				item.setUrl(smallUrl);
+                item.setOwner(owner);
 				items.add(item);
 			}
 
